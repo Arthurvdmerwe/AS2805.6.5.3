@@ -162,7 +162,7 @@ namespace AS2805._6._5._3
             byte[] sSKtcu_H_PKsp_KI_TCUID_RNsp_DTS_user_data = sign.SignData(H_PKsp_KI_TCUID_RNsp_DTS_user_data, tcu.get_Private_Params());
             Console.WriteLine(Utils.HexDump(sSKtcu_H_PKsp_KI_TCUID_RNsp_DTS_user_data));
             Console.WriteLine("----------------------------------------------------------------------------------");
-            Console.WriteLine("Send Signature and Encryption to Sponsor: \n");
+            Console.WriteLine("Send Signature and Encryption to Sponsor so that KI can be extracted \n");
             Console.WriteLine("--------------------------  SIGN ON RESPONSE 2-------------------------\n\n");
 
 
