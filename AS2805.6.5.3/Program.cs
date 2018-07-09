@@ -1,5 +1,7 @@
 ﻿using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
@@ -60,6 +62,10 @@ namespace AS2805._6._5._3
             string KI = "123456789123456789";
             byte[] KI_bytes = Encoding.ASCII.GetBytes(KI);
             Console.WriteLine("KI: " + KI);
+
+            string KCA = "123456789123456789";
+            byte[] KCA_bytes = Encoding.ASCII.GetBytes(KCA);
+            Console.WriteLine("KCA: " + KCA);
 
             DateTime today = DateTime.Now.Date;
             byte[] today_bytes = Encoding.ASCII.GetBytes(today.ToString("yyyyMMdd HH:mm:ss.FFF"));
@@ -164,7 +170,7 @@ namespace AS2805._6._5._3
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("Send Signature and Encryption to Sponsor so that KI can be extracted \n");
             Console.WriteLine("--------------------------  SIGN ON RESPONSE 2-------------------------\n\n");
-
+       
 
 
             Console.WriteLine("-------------------------- DONE--------------------------\n\n");
