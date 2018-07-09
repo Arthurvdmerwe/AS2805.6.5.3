@@ -94,11 +94,11 @@ namespace AS2805._6._5._3
 
         }
 
-        public byte[] Encrypt(string messages)
+        public byte[] Encrypt(byte[] message)
         {
             cipher.Init(true, publicKey);
 
-            byte[] message = utf8enc.GetBytes(messages);
+            //byte[] message = utf8enc.GetBytes(messages);
             byte[] ciphered =  cipher.ProcessBlock(message, 0, message.Length);
             string cipheredText = utf8enc.GetString(ciphered);
             return ciphered;

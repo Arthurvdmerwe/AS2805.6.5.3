@@ -54,6 +54,19 @@ namespace AS2805._6._5._3
             string tcuid = "MN044712H";
             byte[] tcuid_bytes = Encoding.ASCII.GetBytes(tcuid);
             Console.WriteLine("TCUID: " + user_data);
+
+
+         
+            string KI = "123456789123456789";
+            byte[] KI_bytes = Encoding.ASCII.GetBytes(KI);
+            Console.WriteLine("KI: " + KI);
+
+            DateTime today = DateTime.Now.Date;
+            byte[] today_bytes = Encoding.ASCII.GetBytes(today.ToString("yyyyMMdd HH:mm:ss.FFF"));
+            Console.WriteLine("DTS: " + today.ToString("yyyyMMdd HH:mm:ss.FFF"));
+
+
+
             Console.WriteLine("--------------Getting tcuid and user data --- FINISHED-------");
 
 
@@ -126,15 +139,41 @@ namespace AS2805._6._5._3
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("RNsp: " + RNsp + "\n" + Utils.HexDump(RNsp_bytes));
             Console.WriteLine("----------------------------------------------------------------------------------");
-            Console.WriteLine("sSKman(H(PKsp, user data)):\n" + Utils.HexDump(sSKman_H_PKsp_userdata));
- 
+            Console.WriteLine("Sign: sSKman(H(PKsp, user data)):\n" + Utils.HexDump(sSKman_H_PKsp_userdata));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("-------------------------- Initlize sign-on request 2--------------------------\n\n");
+            //Construct cryptogram encrypted by PKsp 
+            Console.WriteLine("Constructing the KI KeyBlock cryptogram (KI, TCUID, RNsp, DTS, user dat)----------");
+            Asn1 asn = new Asn1();
+            
+            byte[] KI_KeyBlock_bytes = asn.KI_KeyBlock(KI_bytes, tcuid_bytes, today_bytes, RNsp_bytes, user_data_bytes);
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine(Utils.HexDump(KI_KeyBlock_bytes));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("Encrypt: ePKsp(KI, TCUID, RNsp, DTS, user data): \n");
+            byte[] PKsp_KI_TCUID_RNsp_DTS_user_data =  sp.Encrypt(KI_KeyBlock_bytes);
+            Console.WriteLine(Utils.HexDump(PKsp_KI_TCUID_RNsp_DTS_user_data));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("Hash: H(ePKsp(KI, TCUID, RNsp, DTS, user data)): \n");
+            byte[] H_PKsp_KI_TCUID_RNsp_DTS_user_data =  hash.Hash_Data(PKsp_KI_TCUID_RNsp_DTS_user_data);
+            Console.WriteLine(Utils.HexDump(H_PKsp_KI_TCUID_RNsp_DTS_user_data));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("Sign: sSKtcu(H(ePKsp(KI, TCUID, RNsp, DTS, user data))): \n");
+            byte[] sSKtcu_H_PKsp_KI_TCUID_RNsp_DTS_user_data = sign.SignData(H_PKsp_KI_TCUID_RNsp_DTS_user_data, tcu.get_Private_Params());
+            Console.WriteLine(Utils.HexDump(sSKtcu_H_PKsp_KI_TCUID_RNsp_DTS_user_data));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("Send Signature and Encryption to Sponsor: \n");
+            Console.WriteLine("--------------------------  SIGN ON RESPONSE 2-------------------------\n\n");
+
+
+
             Console.WriteLine("-------------------------- DONE--------------------------\n\n");
 
 
             Console.ReadLine();
-            //Asn1 asn = new Asn1();
-            ////var obj = asn.AddObject(NistObjectIdentifiers.IdSha256.Id, H_PKman_userdata);
-            ////obj.ToString();
+         
+            //var obj = asn.AddObject(NistObjectIdentifiers.IdSha256.Id, H_PKman_userdata);
+            //obj.ToString();
 
             //var obj = asn.SHA256_DER(H_PKman_userdata);
             //Console.WriteLine("----");
@@ -145,7 +184,7 @@ namespace AS2805._6._5._3
 
             //byte[] KI = Encoding.ASCII.GetBytes("5645645456446554564544564564651233212154534535343");
             //byte[] TCUID = tcuid_bytes;
-            //byte[] DTS = Encoding.ASCII.GetBytes("20/04/2011");
+            
             //byte[] RNsp_bytes2 = RNsp_bytes;
             //byte[] User_Data = user_data_bytes;
 
