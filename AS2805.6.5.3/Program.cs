@@ -45,20 +45,20 @@ namespace AS2805._6._5._3
             Random rnd = new Random();
             string RNsp = rnd.Next(222222, 999999).ToString();
             byte[] RNsp_bytes = Encoding.ASCII.GetBytes(RNsp);
-            Console.WriteLine("RNsp: " + RNsp);
+            Console.WriteLine("RNsp: \t" + RNsp);
 
             string user_data = "OPTIONAL USER DATA THAT CAN BE ANY LENGTH";
             byte[] user_data_bytes = Encoding.ASCII.GetBytes(user_data);
-            Console.WriteLine("User Data: " + user_data);
+            Console.WriteLine("User Data: \t" + user_data);
 
             string tcuid = "MN044712H";
             byte[] tcuid_bytes = Encoding.ASCII.GetBytes(tcuid);
-            Console.WriteLine("TCUID: " + user_data);
+            Console.WriteLine("TCUID: \t" + tcuid);
 
 
             string AIIC = "0000045127823121";
             byte[] AIIC_bytes = Encoding.ASCII.GetBytes(AIIC);
-            Console.WriteLine("AIIC: " + AIIC);
+            Console.WriteLine("AIIC: \t" + AIIC);
 
 
             SecureRandom random = new SecureRandom();
@@ -67,24 +67,24 @@ namespace AS2805._6._5._3
 
             byte[] KI_bytes = keyGen.GenerateKey();
             string KI = BitConverter.ToString(KI_bytes).Replace("-", string.Empty); 
-            Console.WriteLine("KI: " + KI);
+            Console.WriteLine("KI: \t" + KI);
 
 
             byte[] KIA_bytes = keyGen.GenerateKey();
            
             string KIA = BitConverter.ToString(KIA_bytes).Replace("-", string.Empty);
-            Console.WriteLine("KIA: " + KIA);
+            Console.WriteLine("KIA: \t" + KIA);
 
 
             
 
             byte[] KCA_bytes = keyGen.GenerateKey();
             string KCA = BitConverter.ToString(KCA_bytes).Replace("-", string.Empty);
-            Console.WriteLine("KCA: " + KCA);
+            Console.WriteLine("KCA: \t" + KCA);
 
             DateTime today = DateTime.Now.Date;
-            byte[] today_bytes = Encoding.ASCII.GetBytes(today.ToString("yyyyMMdd HH:mm:ss.FFF"));
-            Console.WriteLine("DTS: " + today.ToString("yyyyMMdd HH:mm:ss.FFF"));
+            byte[] today_bytes = Encoding.ASCII.GetBytes(today.ToString("yyyyMMdd HH:mm:ss"));
+            Console.WriteLine("DTS: \t" + today.ToString("yyyyMMdd HH:mm:ss"));
 
 
 
