@@ -1,5 +1,7 @@
 ﻿using Org.BouncyCastle.Asn1.Nist;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Security;
@@ -15,10 +17,6 @@ namespace AS2805._6._5._3
     {
 
 
-
-
-        //Generate a publuc private key p[air
-        //Hash abd sign the public keys 'SHA256
         static void Main(string[] args)
         {
             Certificate cert = new Certificate(2048);
@@ -47,7 +45,7 @@ namespace AS2805._6._5._3
             Random rnd = new Random();
             string RNsp = rnd.Next(222222, 999999).ToString();
             byte[] RNsp_bytes = Encoding.ASCII.GetBytes(RNsp);
-            Console.WriteLine("RNsp: " + RNsp_bytes);
+            Console.WriteLine("RNsp: " + RNsp);
 
             string user_data = "OPTIONAL USER DATA THAT CAN BE ANY LENGTH";
             byte[] user_data_bytes = Encoding.ASCII.GetBytes(user_data);
@@ -58,13 +56,30 @@ namespace AS2805._6._5._3
             Console.WriteLine("TCUID: " + user_data);
 
 
-         
-            string KI = "123456789123456789";
-            byte[] KI_bytes = Encoding.ASCII.GetBytes(KI);
+            string AIIC = "0000045127823121";
+            byte[] AIIC_bytes = Encoding.ASCII.GetBytes(AIIC);
+            Console.WriteLine("AIIC: " + AIIC);
+
+
+            SecureRandom random = new SecureRandom();
+            DesEdeKeyGenerator keyGen = new DesEdeKeyGenerator();
+            keyGen.Init(new KeyGenerationParameters(random, 128));
+
+            byte[] KI_bytes = keyGen.GenerateKey();
+            string KI = BitConverter.ToString(KI_bytes).Replace("-", string.Empty); 
             Console.WriteLine("KI: " + KI);
 
-            string KCA = "123456789123456789";
-            byte[] KCA_bytes = Encoding.ASCII.GetBytes(KCA);
+
+            byte[] KIA_bytes = keyGen.GenerateKey();
+           
+            string KIA = BitConverter.ToString(KIA_bytes).Replace("-", string.Empty);
+            Console.WriteLine("KIA: " + KIA);
+
+
+            
+
+            byte[] KCA_bytes = keyGen.GenerateKey();
+            string KCA = BitConverter.ToString(KCA_bytes).Replace("-", string.Empty);
             Console.WriteLine("KCA: " + KCA);
 
             DateTime today = DateTime.Now.Date;
@@ -73,7 +88,7 @@ namespace AS2805._6._5._3
 
 
 
-            Console.WriteLine("--------------Getting tcuid and user data --- FINISHED-------");
+            Console.WriteLine("-----------------------------------------------------------------------");
 
 
             Console.WriteLine("--------------------------Sponsor Pre-Compute--------------------------");
@@ -179,10 +194,48 @@ namespace AS2805._6._5._3
             Console.WriteLine("----------------------------------------------------------------------------------\n\n");
 
             Console.WriteLine("--------------------------  SIGN ON RESPONSE 2-------------------------\n\n");
+            /*
+             The KCA shall be used to derive a unique KIA_n per acquirer. The sponsor shall be responsible for providing the KIA_n to each acquirer through a secure channel. 
+             Each acquirer shall use its unique KIAn to download or derive the initial key(s) required for the appropriate key management scheme
        
+           
+            The AIIC is right justified and left zero filled in a 128-bit data field.
+                KMACI_n = (OWF(KIA_n,D))
+                KCA = 
+             */
+            DESAES desaes = new DESAES();
+            
+
+            Console.WriteLine("-------------------------Calculate KMACI_n = HMAC(KIA_n,AIIC) -------------------------\n");
+            Console.WriteLine("-------------------------OWF = SHA256 HMAC -------------------------");
+            byte[] H_KIA_n_AIIC = hash.HMAC(AIIC_bytes, KIA_bytes);
+            Console.WriteLine("KMAC = \n" + Utils.HexDump(H_KIA_n_AIIC));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("KCA = \n" + Utils.HexDump(KCA_bytes));
+            Console.WriteLine("------------------------------ENCRYPT---------------------------------------------");
+            var E_KMAC = desaes.EncryptDES3(H_KIA_n_AIIC, KI_bytes);
+            Console.WriteLine("e(KMAC) = \n" + Utils.HexDump(E_KMAC));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            var E_KCA = desaes.EncryptDES3(KCA_bytes, KI_bytes);
+            Console.WriteLine("e(KCA) = \n" + Utils.HexDump(E_KCA));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("------------------------------DECRYPT---------------------------------------------");
+            var D_KCA = desaes.DecryptDES3(E_KCA, KI_bytes);
+            Console.WriteLine("d(KCA) = \n" + Utils.HexDump(D_KCA));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            var D_KMAC = desaes.DecryptDES3(E_KMAC, KI_bytes);
+            Console.WriteLine("d(KMAC) = \n" + Utils.HexDump(D_KMAC));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("**------------------------------DONE--------------------------------------------**");
 
 
-            Console.WriteLine("-------------------------- DONE--------------------------\n\n");
+
+
+
+
+
+
+
 
 
             Console.ReadLine();

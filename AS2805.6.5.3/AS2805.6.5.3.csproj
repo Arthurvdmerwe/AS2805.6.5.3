@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="asn1.cs" />
     <Compile Include="Certificate.cs" />
+    <Compile Include="DESAES.cs" />
     <Compile Include="Format.cs" />
     <Compile Include="HashMAC.cs" />
     <Compile Include="Program.cs" />
