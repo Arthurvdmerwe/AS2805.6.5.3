@@ -169,6 +169,15 @@ namespace AS2805._6._5._3
             Console.WriteLine(Utils.HexDump(sSKtcu_H_PKsp_KI_TCUID_RNsp_DTS_user_data));
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("Send Signature and Encryption to Sponsor so that KI can be extracted \n");
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("Verify: sSKtcu(H(ePKsp(KI, TCUID, RNsp, DTS, user data))): \n");
+            bool sSKtcuV =  sign.VerifySignature(tcu.get_Public_Params(), sSKtcu_H_PKsp_KI_TCUID_RNsp_DTS_user_data, H_PKsp_KI_TCUID_RNsp_DTS_user_data);
+            Console.WriteLine("Verified: " + sSKtcuV);
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("Decrypt: ePKsp(KI, TCUID, RNsp, DTS, user data): \n");
+            Console.WriteLine("Decrypted:\n" + Utils.HexDump(sp.Decrypt(PKsp_KI_TCUID_RNsp_DTS_user_data)));
+            Console.WriteLine("----------------------------------------------------------------------------------\n\n");
+
             Console.WriteLine("--------------------------  SIGN ON RESPONSE 2-------------------------\n\n");
        
 

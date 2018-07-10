@@ -103,14 +103,13 @@ namespace AS2805._6._5._3
             string cipheredText = utf8enc.GetString(ciphered);
             return ciphered;
         }
-        public string Decrypt(byte[] message)
+        public byte[] Decrypt(byte[] message)
         {
 
             cipher.Init(false, privateKey);
             //byte[] message = utf8enc.GetBytes(messages);
             byte[] deciphered = cipher.ProcessBlock(message, 0, message.Length);
-            string decipheredText = utf8enc.GetString(deciphered);
-            return decipheredText;
+            return deciphered;
         }
 
 

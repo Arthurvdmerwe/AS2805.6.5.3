@@ -539,7 +539,7 @@ namespace Org.BouncyCastle.Security
             {
                 return new Iso9796d2Signer(new RsaBlindedEngine(), new RipeMD160Digest(), true);
             }
-
+            //3DES    
             if (Platform.EndsWith(mechanism, "/X9.31"))
             {
                 string x931 = mechanism.Substring(0, mechanism.Length - "/X9.31".Length);
