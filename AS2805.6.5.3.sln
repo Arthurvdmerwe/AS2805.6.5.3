@@ -11,6 +11,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "Crypto\test\Un
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{06BAF7A5-0BDC-432C-A60E-0643BD8A786C}"
 	ProjectSection(SolutionItems) = preProject
+		AS2805.6.5.3\AS2805.6.5.3.pdf = AS2805.6.5.3\AS2805.6.5.3.pdf
 		README.rtf = README.rtf
 	EndProjectSection
 EndProject
