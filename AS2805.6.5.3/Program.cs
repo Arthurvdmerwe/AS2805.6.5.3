@@ -136,7 +136,7 @@ namespace AS2805._6._5._3
             Console.WriteLine("-------------------------- OPTION 1 --------------------------");
 
 
-            Console.WriteLine("-------------------------- Initlize sign-on request 1--------------------------\n\n");
+            Console.WriteLine("--------------------------SIGN ON REQUEST 1--------------------------\n\n");
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("TCU -> Sending:...");
             Console.WriteLine("----------------------------------------------------------------------------------");
@@ -148,11 +148,8 @@ namespace AS2805._6._5._3
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("sSKman(H(PKtcu)|TCUID|user data) \n" + Utils.HexDump(sSKman_H_PKtcu_TCUID_userdata));
             Console.WriteLine("----------------------------------------------------------------------------------");
-            Console.WriteLine("****.....Sponsor Calculating:...");
-            Console.WriteLine("Storing TCUID & User Data");
+            Console.WriteLine("------------------------SIGN ON RESPONSE 1--------------------------------------");
             Console.WriteLine("Veryfying Signature of sSKman(H(PKtcu)|TCUID|user data)");
-            Console.WriteLine("-------------------------- Initlize sign-on response 1--------------------------\n\n");
-            Console.WriteLine("Sponsor Calculating...and Sending");
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("User Data: " + user_data + "\n" + Utils.HexDump(user_data_bytes));
             Console.WriteLine("----------------------------------------------------------------------------------");
@@ -162,7 +159,7 @@ namespace AS2805._6._5._3
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("Sign: sSKman(H(PKsp|RNsp|user data)):\n" + Utils.HexDump(sSKman_H_PKsp_RNsp_userdata));
             Console.WriteLine("----------------------------------------------------------------------------------");
-            Console.WriteLine("-------------------------- Initlize sign-on request 2--------------------------\n\n");
+            Console.WriteLine("-------------------------- SIGN ON REQUEST 2--------------------------\n\n");
             //Construct cryptogram encrypted by PKsp 
             Console.WriteLine("Constructing the KI KeyBlock cryptogram (KI, TCUID, RNsp, DTS, user dat)----------");
             Asn1 asn = new Asn1();
