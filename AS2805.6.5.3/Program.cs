@@ -96,38 +96,40 @@ namespace AS2805._6._5._3
             byte[] H_PKman_userdata = hash.Hash_Data(PKman.Concat(user_data_bytes).ToArray());
             Console.WriteLine("SHA256 Hash of PKman + user data : \n" + Utils.HexDump(H_PKman_userdata));
 
-            byte[] H_PKsp_userdata = hash.Hash_Data(PKsp.Concat(user_data_bytes).ToArray());
-            Console.WriteLine("SHA256 Hash of PKsp + user data : \n" + Utils.HexDump(H_PKman_userdata));
+            byte[] H_PKsp_RNsp_userdata = hash.Hash_Data(PKsp.Concat(RNsp_bytes).Concat(user_data_bytes).ToArray());
+            //Console.WriteLine("SHA256 Hash of PKsp + user data : \n" + Utils.HexDump(H_PKman_userdata));
 
-
+            Console.WriteLine("----------------------------------------------------------------------------------");
             Signature sign = new Signature();
             byte[] sSKman_H_PKman_userdata = sign.SignData(H_PKman_userdata, man.get_Private_Params());
-            Console.WriteLine("Signature of sSKman(H(PKman + user data)) : \n" + Utils.HexDump(sSKman_H_PKman_userdata));
+            Console.WriteLine("Sponsor Verifies Manufacturer Signature of sSKman(H(PKman + user data)) : \n" + Utils.HexDump(sSKman_H_PKman_userdata));
 
 
-            byte[] sSKman_H_PKsp_userdata = sign.SignData(H_PKsp_userdata, man.get_Private_Params());
-            Console.WriteLine("Signature of sSKman(H(PKsp + user data)) : \n" + Utils.HexDump(sSKman_H_PKsp_userdata));
+            byte[] sSKman_H_PKsp_RNsp_userdata = sign.SignData(H_PKsp_RNsp_userdata, man.get_Private_Params());
+            //Console.WriteLine("Signature of sSKman(H(PKsp + user data)) : \n" + Utils.HexDump(sSKman_H_PKsp_userdata));
 
             byte[] H_PKsp = hash.Hash_Data(PKsp);
-            Console.WriteLine("SHA256 Hash of PKsp : \n" + Utils.HexDump(H_PKsp));
+            //Console.WriteLine("SHA256 Hash of PKsp : \n" + Utils.HexDump(H_PKsp));
    
             byte[] sSKman_H_PKsp = sign.SignData(H_PKsp, man.get_Private_Params());
-            Console.WriteLine("Signature of sSKman(H(PKman)) : \n" + Utils.HexDump(sSKman_H_PKsp));
+            //Console.WriteLine("Signature of sSKman(H(PKsp))) : \n" + Utils.HexDump(sSKman_H_PKsp));
 
-            Console.WriteLine("--------------------------TCU Pre-Compute--------------------------");
+            //Console.WriteLine("--------------------------TCU Pre-Compute--------------------------");
 
 
             byte[] H_PKtcu = hash.Hash_Data(PKtcu);
-            Console.WriteLine("SHA256 Hash of PKtcu : \n" + Utils.HexDump(H_PKtcu));
+            //Console.WriteLine("SHA256 Hash of PKtcu : \n" + Utils.HexDump(H_PKtcu));
 
-            Pad pad = new Pad();
-            var padHash = pad.Pad_Data(H_PKtcu, 128);
-            Console.WriteLine("SHA256 Hash of PKtcu and PKCS v1.5 padding : \n" + Utils.HexDump(padHash));
-            
+            //Pad pad = new Pad();
+            //var padHash = pad.Pad_Data(H_PKtcu, 128);
+            //Console.WriteLine("SHA256 Hash of PKtcu and PKCS v1.5 padding : \n" + Utils.HexDump(padHash));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            byte[] sSKman_H_PKtcu_ = sign.SignData(H_PKtcu, man.get_Private_Params());
+            Console.WriteLine("Termninal Verifies Manufacturer Signature of PKtcu sSKman(H(PKtcu)) :\n" + Utils.HexDump(sSKman_H_PKtcu_));
+            Console.WriteLine("----------------------------------------------------------------------------------");
 
-
-            byte[] sSKman_H_PKtcu = sign.SignData(H_PKtcu, man.get_Private_Params());
-            Console.WriteLine("Signature of sSKman(H(PKtcu)) : \n" + Utils.HexDump(sSKman_H_PKtcu));
+            byte[] sSKman_H_PKtcu_TCUID_userdata = sign.SignData(H_PKtcu.Concat(tcuid_bytes).Concat(user_data_bytes).ToArray(), man.get_Private_Params());
+            //Console.WriteLine("Signature of sSKman(H(PKtcu)|TCUID|user data) : \n" + Utils.HexDump(sSKman_H_PKtcu));
             //Console.ReadLine();
 
 
@@ -144,23 +146,21 @@ namespace AS2805._6._5._3
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("H(PKtcu) \n" + Utils.HexDump(H_PKtcu));
             Console.WriteLine("----------------------------------------------------------------------------------");
-            Console.WriteLine("sSKman(H(PKtcu)) \n" + Utils.HexDump(sSKman_H_PKtcu));
+            Console.WriteLine("sSKman(H(PKtcu)|TCUID|user data) \n" + Utils.HexDump(sSKman_H_PKtcu_TCUID_userdata));
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("****.....Sponsor Calculating:...");
             Console.WriteLine("Storing TCUID & User Data");
-            Console.WriteLine("Veryfying Signature of sSKman(H(PKtcu))");
+            Console.WriteLine("Veryfying Signature of sSKman(H(PKtcu)|TCUID|user data)");
             Console.WriteLine("-------------------------- Initlize sign-on response 1--------------------------\n\n");
             Console.WriteLine("Sponsor Calculating...and Sending");
-            Console.WriteLine("----------------------------------------------------------------------------------");
-            Console.WriteLine("H(PKsp) \n" + Utils.HexDump(H_PKsp));
-            Console.WriteLine("----------------------------------------------------------------------------------");
-            Console.WriteLine("H(PKsp + user data) \n" + Utils.HexDump(H_PKsp_userdata));
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("User Data: " + user_data + "\n" + Utils.HexDump(user_data_bytes));
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("RNsp: " + RNsp + "\n" + Utils.HexDump(RNsp_bytes));
             Console.WriteLine("----------------------------------------------------------------------------------");
-            Console.WriteLine("Sign: sSKman(H(PKsp, user data)):\n" + Utils.HexDump(sSKman_H_PKsp_userdata));
+            Console.WriteLine("H(PKsp|RNsp|userdata) \n" + Utils.HexDump(H_PKsp_RNsp_userdata));
+            Console.WriteLine("----------------------------------------------------------------------------------");
+            Console.WriteLine("Sign: sSKman(H(PKsp|RNsp|user data)):\n" + Utils.HexDump(sSKman_H_PKsp_RNsp_userdata));
             Console.WriteLine("----------------------------------------------------------------------------------");
             Console.WriteLine("-------------------------- Initlize sign-on request 2--------------------------\n\n");
             //Construct cryptogram encrypted by PKsp 
