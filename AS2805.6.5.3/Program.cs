@@ -1,9 +1,13 @@
-﻿using Org.BouncyCastle.Asn1.Nist;
+﻿using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Nist;
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Paddings;
+using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
 using System;
 using System.Collections.Generic;
@@ -242,20 +246,43 @@ namespace AS2805._6._5._3
             else
             {
 
+                bool ForEncryption = true;
 
-                // Create a self-signed *test* certificate
-                // Certificate is valid for organisations participating in "Scheme42" which is controlled by "OrgX"
-                // Certificate is issued by some organisation called "Certificate Issuer"
-                // Certificate is valid with suppliers with Ids S001 or S002
-                // Certificate is used by a Customer with an Id of C001
-                // Certificate is not very strong, 512 bit, but will generate quickly
+                //Requested Certificate Name and things
+                X509Name name = new X509Name("C=Commonwealth Bank of Australia, O=CBA, OU=Cryptographical Services, CN=TID25124548");
+     
 
+
+                //Key generation 2048bits
+                var rkpg = new RsaKeyPairGenerator();
+                rkpg.Init(new KeyGenerationParameters(new SecureRandom(), 2048));
+                AsymmetricCipherKeyPair ackp = rkpg.GenerateKeyPair(); //BAPI.EncryptionKey;
+                                                                       //if (!ForEncryption) ackp = BAPI.SignKey;
+
+                //Key Usage Extension
+                var ku = new KeyUsage(ForEncryption ? KeyUsage.KeyEncipherment : KeyUsage.DigitalSignature);
+                var extgen = new Org.BouncyCastle.Asn1.X509.X509ExtensionsGenerator();
+                extgen.AddExtension(X509Extensions.KeyUsage, true, ku);
+                var attribute = new AttributeX509(PkcsObjectIdentifiers.Pkcs9AtExtensionRequest, new DerSet(extgen.Generate()));
+
+                //PKCS #10 Certificate Signing Request
+                Pkcs10CertificationRequest csr = new Pkcs10CertificationRequest("SHA1WITHRSA", name, ackp.Public, new DerSet(attribute), ackp.Private); //new DerSet(new DerOctetString(ku))
+
+                var csrbytedata = csr.GetDerEncoded();
+            
+                var asn1Csr = csr.ToAsn1Object();
+                //////
+                Console.WriteLine(asn1Csr.GetDerEncoded().ToString());
+                Console.WriteLine(Utils.HexDump(csrbytedata));
                 string pwd = "password";
-                var suppliers = new[] { "CN=COMMON_NAME, OU=ORGINISATION_UNIT, O=ORG, C=AU", "CN=COMMON_NAME2, OU=ORGINISATION_UNIT2, O=ORG, C=AU" };
-                var CA_issuer = new X509(suppliers, "CN=Certificate Issuer, OU=Scheme42, O=Certificate Issuer, C=AU", CertStrength.bits_2048);
-                X509Certificate2 GeneratedCert = CA_issuer.MakeCertificate(pwd, "CN=C001, OU=CustomerId, OU=Scheme42, O=OrgX, C=GB", 2);
+                var suppliers = new[] { "CN=*.cba.com.au" };
+
+                var CA_issuer = new X509(suppliers, "CN=CBA RootCA, OU=Cryptographical Services, O=Commonwealth Bank of Australia, L=SYDNEY, C=AU", CertStrength.bits_2048);
+                X509Certificate2 GeneratedCert = CA_issuer.MakeCertificate(pwd, "CN=TID25124548.cba.com.au, OU=Commonwealth Bank of Australia, OU=CBA Business System Hosting, O=Commonwealth Bank of Australia, C=AU", 2);
+               
                 Console.WriteLine(GeneratedCert.ToString());
                 Console.WriteLine(Utils.HexDump(GeneratedCert.Export(X509ContentType.Pkcs12, pwd)));
+               
                 Console.ReadLine();
           
             }
